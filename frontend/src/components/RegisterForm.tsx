@@ -1,18 +1,21 @@
-//
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { RegisterCredentials } from '../types/auth';
 import type { ValidationError } from '../utils/validation';
-import { validateLoginForm } from '../utils/validation';
+import { validateRegisterForm } from '../utils/validation';
 import { useAppDispatch, useAppSelector } from '../store';
-import { login, clearError } from '../store/slices/authSlice';
+import { register, clearError } from '../store/slices/authSlice';
 
-const LoginForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useAppSelector(state => state.auth);
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState<RegisterCredentials>({
+    email: '',
+    password: '',
+    name: '',
+  });
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
   useEffect(() => {
@@ -29,9 +32,22 @@ const LoginForm: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+    dispatch(clearError()); // Clear any existing auth errors when user types
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validationResult = validateLoginForm(email, password);
+    const validationResult = validateRegisterForm(
+      formData.email,
+      formData.password,
+      formData.name
+    );
     
     if (!validationResult.isValid) {
       setValidationErrors(validationResult.errors);
@@ -42,10 +58,10 @@ const LoginForm: React.FC = () => {
     dispatch(clearError());
     
     try {
-      await dispatch(login({ email, password })).unwrap();
+      await dispatch(register(formData)).unwrap();
     } catch (err) {
       // Error handling is managed by Redux
-      console.error('Login failed:', err);
+      console.error('Registration failed:', err);
     }
   };
 
@@ -54,15 +70,28 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Welcome Back</h2>
+    <div className="register-container">
+      <form className="register-form" onSubmit={handleSubmit}>
+        <h2>Create Account</h2>
         
         <div className="form-group">
           <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder=" "
+            required
+          />
+          <label>Full Name</label>
+        </div>
+
+        <div className="form-group">
+          <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder=" "
             required
           />
@@ -72,8 +101,9 @@ const LoginForm: React.FC = () => {
         <div className="form-group">
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder=" "
             required
           />
@@ -85,15 +115,13 @@ const LoginForm: React.FC = () => {
           className="button-primary"
           disabled={isLoading}
         >
-          {isLoading ? 'Logging in...' : 'Log In'}
+          {isLoading ? 'Creating Account...' : 'Sign Up'}
         </button>
 
         <div className="form-footer">
-          <a href="/forgot-password" className="forgot-password">
-            Forgot Password?
-          </a>
-          <a href="/register" className="register-link">
-            Create Account
+          <span>Already have an account?</span>
+          <a href="/login" className="login-link">
+            Log In
           </a>
         </div>
       </form>
@@ -113,7 +141,7 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
 
 const errorStyles = `
 <style>
@@ -139,7 +167,7 @@ document.head.insertAdjacentHTML('beforeend', errorStyles);
 
 const styles = `
 <style>
-  .login-container {
+  .register-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -148,7 +176,7 @@ const styles = `
     width: 100%;
   }
 
-  .login-form {
+  .register-form {
     background: white;
     border-radius: clamp(16px, 2vw, 24px);
     padding: clamp(32px, 4vw, 64px);
@@ -158,12 +186,12 @@ const styles = `
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .login-form:hover {
+  .register-form:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
   }
 
-  .login-form h2 {
+  .register-form h2 {
     font-family: -apple-system, system-ui, sans-serif;
     font-size: clamp(24px, 3vw, 36px);
     font-weight: bold;
@@ -236,20 +264,24 @@ const styles = `
   .form-footer {
     margin-top: 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 8px;
   }
 
-  .forgot-password,
-  .register-link {
+  .form-footer span {
+    color: #6E6E73;
+    font-size: clamp(14px, 1.8vw, 16px);
+  }
+
+  .login-link {
     color: #007AFF;
     text-decoration: none;
     font-size: clamp(14px, 1.8vw, 16px);
     transition: color 0.2s ease;
   }
 
-  .forgot-password:hover,
-  .register-link:hover {
+  .login-link:hover {
     color: #5856D6;
   }
 </style>

@@ -1,29 +1,30 @@
+// frontend/src/routes/routes.tsx
 import React from 'react';
 import type { RouteObject } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 import ProtectedRoute from './ProtectedRoute';
 import App from '../App';
 
 // Public routes accessible without authentication
-export const publicRoutes: RouteObject[] = [
+const publicRoutes: RouteObject[] = [
   {
     path: '/login',
     element: <LoginForm />,
   },
   {
     path: '/register',
-    // TODO: Implement RegisterForm component
-    element: <div>Register Form</div>,
+    element: <RegisterForm />,
   },
 ];
 
 // Protected routes that require authentication
-export const protectedRoutes: RouteObject[] = [
+const protectedRoutes: RouteObject[] = [
   {
     path: '/dashboard',
     element: (
       <ProtectedRoute>
-        <div>Dashboard</div>
+        <div className="dashboard">Dashboard Content</div>
       </ProtectedRoute>
     ),
   },
@@ -31,7 +32,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/payments',
     element: (
       <ProtectedRoute>
-        <div>Payments</div>
+        <div className="payments">Payments Content</div>
       </ProtectedRoute>
     ),
   },
@@ -39,14 +40,14 @@ export const protectedRoutes: RouteObject[] = [
     path: '/profile',
     element: (
       <ProtectedRoute>
-        <div>Profile</div>
+        <div className="profile">Profile Content</div>
       </ProtectedRoute>
     ),
   },
 ];
 
 // Root routes configuration
-export const routes: RouteObject[] = [
+const routes: RouteObject[] = [
   {
     path: '/',
     element: <App />,
@@ -55,7 +56,7 @@ export const routes: RouteObject[] = [
         index: true,
         element: (
           <ProtectedRoute>
-            <div>Dashboard</div>
+            <div className="dashboard">Dashboard Content</div>
           </ProtectedRoute>
         ),
       },
