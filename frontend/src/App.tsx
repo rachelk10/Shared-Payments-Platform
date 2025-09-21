@@ -1,95 +1,57 @@
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
-const App: React.FC = () => {
+function App() {
   return (
     <div className="app">
-      <header className="header">
-        <h1>Shared Payment System</h1>
-        <nav className="nav">
-          <Link to="/" className="nav-link">Dashboard</Link>
-          <Link to="/payments" className="nav-link">Payments</Link>
-          <Link to="/profile" className="nav-link">Profile</Link>
-        </nav>
-      </header>
-      <main className="main">
-        <div className="container">
-          <Outlet />
-        </div>
-      </main>
+      <Outlet />
     </div>
   );
-};
+}
 
 export default App;
 
+// Add global responsive styles
 const styles = `
 <style>
+  :root {
+    --max-width: 1440px;
+    --container-padding: clamp(16px, 5vw, 48px);
+  }
+
   .app {
     min-height: 100vh;
-    background-color: #F2F2F7;
-  }
-
-  .header {
-    background: linear-gradient(135deg, #007AFF, #00C6FF);
-    padding: 16px 24px;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .header h1 {
-    font-family: -apple-system, system-ui, sans-serif;
-    font-size: 28px;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  .nav {
-    display: flex;
-    gap: 20px;
-  }
-
-  .nav-link {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-  }
-
-  .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .main {
-    padding: 24px;
-  }
-
-  .container {
-    max-width: 1200px;
+    width: 100%;
+    max-width: var(--max-width);
     margin: 0 auto;
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: var(--container-padding);
   }
 
-  .container:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  @media (max-width: 768px) {
+    .app {
+      padding: calc(var(--container-padding) / 2);
+    }
   }
 
-  h2 {
-    font-family: -apple-system, system-ui, sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333333;
-    margin: 0 0 20px 0;
+  /* Responsive typography */
+  body {
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.5;
+  }
+
+  h1 { font-size: clamp(24px, 4vw, 36px); }
+  h2 { font-size: clamp(20px, 3vw, 28px); }
+  h3 { font-size: clamp(18px, 2.5vw, 24px); }
+
+  /* Responsive spacing */
+  .container {
+    padding: clamp(16px, 3vw, 32px);
+  }
+
+  /* Responsive grid */
+  .grid {
+    display: grid;
+    gap: clamp(16px, 3vw, 32px);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   }
 </style>
 `;
